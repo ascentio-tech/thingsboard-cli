@@ -13,3 +13,4 @@ build
 env/
 log/
 swagger-codegen-cli.jar
+.ropeproject
