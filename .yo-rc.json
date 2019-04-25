@@ -1,0 +1,13 @@
+{
+  "generator-asc-python": {
+    "promptValues": {
+      "name": "thingsboard-cli",
+      "version": "0.1.0.dev1",
+      "type": "cli",
+      "mainModule": "thingsboard_cli",
+      "description": "Thingsboard util CLI",
+      "readableName": "thingsboard-cli"
+    },
+    "generator-version": "0.5.0"
+  }
+}

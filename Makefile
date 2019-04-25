@@ -1,3 +1,16 @@
+test:
+	python setup.py test
+
+install:
+	pip install .
+
+uninstall:
+	pip uninstall -y thingsboard-cli || echo "Seems not installed"
+
+reinstall: uninstall install
+update-project-layout:
+	yo asc-python
+
 swagger-codegen-cli.jar:
 	wget http://repo1.maven.org/maven2/io/swagger/swagger-codegen-cli/2.2.0/swagger-codegen-cli-2.2.0.jar -O swagger-codegen-cli.jar
 
