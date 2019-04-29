@@ -14,7 +14,7 @@
       "url": "https://github.com/thingsboard/thingsboard/blob/master/LICENSE"
     }
   },
-  "host": "demo-epec:8080",
+  "host": "localhosT:8080",
   "basePath": "/",
   "tags": [
     {
