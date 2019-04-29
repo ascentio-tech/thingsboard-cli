@@ -1,4 +1,5 @@
 import click
+import signal
 from click import command
 from thingsboard_cli.version import __version__
 import thingsboard_client as tb
@@ -20,31 +21,45 @@ def cli(ctx, username, url, password):
   """
   Thinsboard CLI
   """
-  path = "{}/api/auth/login".format(url)
-
-  response = requests.post(url=path,json={'username':username, 'password':password})
-  if response.status_code == requests.codes.ok:
+  def authenticate(url, username, password):
+    path = "{}/api/auth/login".format(url)
+    response = requests.post(url=path,json={'username':username, 'password':password})
+    if response.status_code == requests.codes.ok:
+      return True, response.json()['token']
+    else:
+      return False, ''
+  def create_api_client(url, username, password, token):
     configuration = tb.Configuration()
     configuration.username = username
     configuration.password = password
     configuration.host = url
-    configuration.api_key['X-Authorization'] = response.json()['token']
+    configuration.verify_ssl = False
+    configuration.api_key['X-Authorization'] = token
     configuration.api_key_prefix['X-Authorization'] = 'Bearer'
-    tb_client = tb.ApiClient()
+    return tb.ApiClient(configuration=configuration)
+
+  is_authenticated, token = authenticate(url, username, password)
+  if is_authenticated:
+    click.echo(click.style("Authenticated!", fg='green'))
+    tb_client = create_api_client(url, username, password, token)
 
   else:
-    click.echo("Could not authenticate with given credentials")
-    print response.json()
+    click.echo(click.style("Could not authenticate with given credentials", fg='red'))
+    print(response.json())
     exit(1)
 
   ctx.obj = Repo(tb_client)
+
 
 @cli.command()
 @pass_repo
 def dashboard_list(repo):
   click.echo('- Listing all dashboards')
-  dashboards = tb.DashboardcontrollerApi(repo.client).get_tenant_dashboards_using_get(limit=100).data
-  [click.echo("{} {}".format(d.id.id, d.name)) for d in dashboards]
+  def print_dashboards(dashboards):
+    [click.echo("{} {}".format(d.id.id, d.name)) for d in dashboards]
+
+  dashboards = tb.DashboardControllerApi(repo.client).get_tenant_dashboards_using_get(limit=100)
+  print_dashboards(dashboards)
 
 
 def main(**kwargs):

@@ -36,7 +36,10 @@ setup(
     tests_require=['pytest==3.0.7', 'pytest-quickcheck==0.8.2',
                    'coverage==4.3.4', 'pytest-cov==2.4.0',
                    'mock==1.3.0', 'testfixtures==4.9.1'],
-    install_requires=['click', 'requests'],
+    install_requires=['click',
+                      'requests',
+                      'thingsboard-client>=2.3.0'
+                      ],
     author_email="gmatheu@ascentio.com.ar",
     description=DESCRIPTION,
     long_description='Thingsboard util CLI',
