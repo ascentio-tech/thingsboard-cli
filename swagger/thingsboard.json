@@ -14,13 +14,9 @@
       "url": "https://github.com/thingsboard/thingsboard/blob/master/LICENSE"
     }
   },
-  "host": "localhosT:8080",
+  "host": "localhost",
   "basePath": "/",
   "tags": [
-    {
-      "name": "billing-controller",
-      "description": "Billing Controller"
-    },
     {
       "name": "admin-controller",
       "description": "Admin Controller"
@@ -58,10 +54,6 @@
       "description": "Telemetry Controller"
     },
     {
-      "name": "device-api-controller",
-      "description": "Device Api Controller"
-    },
-    {
       "name": "event-controller",
       "description": "Event Controller"
     },
@@ -84,6 +76,10 @@
     {
       "name": "device-controller",
       "description": "Device Controller"
+    },
+    {
+      "name": "entity-view-controller",
+      "description": "Entity View Controller"
     },
     {
       "name": "rpc-controller",
@@ -352,7 +348,7 @@
         ]
       }
     },
-    "/api/alarm/highestSeverity/{entityType}/{entityId}": {
+    "/api/alarm/highestSeverity/{entityType}/{entityId}{?searchStatus,status}": {
       "get": {
         "tags": [
           "alarm-controller"
@@ -528,6 +524,54 @@
             ]
           }
         ]
+      },
+      "delete": {
+        "tags": [
+          "alarm-controller"
+        ],
+        "summary": "deleteAlarm",
+        "operationId": "deleteAlarmUsingDELETE",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "alarmId",
+            "in": "path",
+            "description": "alarmId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
       }
     },
     "/api/alarm/{alarmId}/ack": {
@@ -630,7 +674,7 @@
         ]
       }
     },
-    "/api/alarm/{entityType}/{entityId}": {
+    "/api/alarm/{entityType}/{entityId}{?searchStatus,status,limit,startTime,endTime,ascOrder,offset,fetchOriginator}": {
       "get": {
         "tags": [
           "alarm-controller"
@@ -942,57 +986,6 @@
       }
     },
     "/api/assets": {
-      "get": {
-        "tags": [
-          "asset-controller"
-        ],
-        "summary": "getAssetsByIds",
-        "operationId": "getAssetsByIdsUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "assetIds",
-            "in": "query",
-            "description": "assetIds",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Asset"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
       "post": {
         "tags": [
           "asset-controller"
@@ -1050,13 +1043,13 @@
         ]
       }
     },
-    "/api/audit/logs": {
+    "/api/assets{?assetIds}": {
       "get": {
         "tags": [
-          "audit-log-controller"
+          "asset-controller"
         ],
-        "summary": "getAuditLogs",
-        "operationId": "getAuditLogsUsingGET",
+        "summary": "getAssetsByIds",
+        "operationId": "getAssetsByIdsUsingGET",
         "consumes": [
           "application/json"
         ],
@@ -1065,40 +1058,9 @@
         ],
         "parameters": [
           {
-            "name": "startTime",
+            "name": "assetIds",
             "in": "query",
-            "description": "startTime",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "endTime",
-            "in": "query",
-            "description": "endTime",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "ascOrder",
-            "in": "query",
-            "description": "ascOrder",
-            "required": false,
-            "type": "boolean",
-            "default": false
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "offset",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "limit",
+            "description": "assetIds",
             "required": true,
             "type": "string"
           }
@@ -1107,7 +1069,10 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/TimePageData«AuditLog»"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Asset"
+              }
             }
           },
           "401": {
@@ -1131,7 +1096,7 @@
         ]
       }
     },
-    "/api/audit/logs/customer/{customerId}": {
+    "/api/audit/logs/customer/{customerId}{?startTime,endTime,ascOrder,offset,limit}": {
       "get": {
         "tags": [
           "audit-log-controller"
@@ -1219,7 +1184,7 @@
         ]
       }
     },
-    "/api/audit/logs/entity/{entityType}/{entityId}": {
+    "/api/audit/logs/entity/{entityType}/{entityId}{?startTime,endTime,ascOrder,offset,limit}": {
       "get": {
         "tags": [
           "audit-log-controller"
@@ -1314,7 +1279,7 @@
         ]
       }
     },
-    "/api/audit/logs/user/{userId}": {
+    "/api/audit/logs/user/{userId}{?startTime,endTime,ascOrder,offset,limit}": {
       "get": {
         "tags": [
           "audit-log-controller"
@@ -1335,6 +1300,87 @@
             "required": true,
             "type": "string"
           },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "startTime",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "endTime",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "ascOrder",
+            "in": "query",
+            "description": "ascOrder",
+            "required": false,
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "offset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TimePageData«AuditLog»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/audit/logs{?startTime,endTime,ascOrder,offset,limit}": {
+      "get": {
+        "tags": [
+          "audit-log-controller"
+        ],
+        "summary": "getAuditLogs",
+        "operationId": "getAuditLogsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
           {
             "name": "startTime",
             "in": "query",
@@ -1495,50 +1541,6 @@
         ]
       }
     },
-    "/api/billing/cycle": {
-      "post": {
-        "tags": [
-          "billing-controller"
-        ],
-        "summary": "createBillingCycle",
-        "operationId": "createBillingCycleUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/BillingInfoResponse"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
     "/api/component/{componentDescriptorClazz}": {
       "get": {
         "tags": [
@@ -1589,13 +1591,13 @@
         ]
       }
     },
-    "/api/components": {
+    "/api/components/{componentType}": {
       "get": {
         "tags": [
           "component-descriptor-controller"
         ],
-        "summary": "getComponentDescriptorsByTypes",
-        "operationId": "getComponentDescriptorsByTypesUsingGET",
+        "summary": "getComponentDescriptorsByType",
+        "operationId": "getComponentDescriptorsByTypeUsingGET",
         "consumes": [
           "application/json"
         ],
@@ -1604,9 +1606,9 @@
         ],
         "parameters": [
           {
-            "name": "componentTypes",
-            "in": "query",
-            "description": "componentTypes",
+            "name": "componentType",
+            "in": "path",
+            "description": "componentType",
             "required": true,
             "type": "string"
           }
@@ -1642,13 +1644,13 @@
         ]
       }
     },
-    "/api/components/{componentType}": {
+    "/api/components{?componentTypes}": {
       "get": {
         "tags": [
           "component-descriptor-controller"
         ],
-        "summary": "getComponentDescriptorsByType",
-        "operationId": "getComponentDescriptorsByTypeUsingGET",
+        "summary": "getComponentDescriptorsByTypes",
+        "operationId": "getComponentDescriptorsByTypesUsingGET",
         "consumes": [
           "application/json"
         ],
@@ -1657,9 +1659,9 @@
         ],
         "parameters": [
           {
-            "name": "componentType",
-            "in": "path",
-            "description": "componentType",
+            "name": "componentTypes",
+            "in": "query",
+            "description": "componentTypes",
             "required": true,
             "type": "string"
           }
@@ -1827,6 +1829,56 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/Device"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/customer/entityView/{entityViewId}": {
+      "delete": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "unassignEntityViewFromCustomer",
+        "operationId": "unassignEntityViewFromCustomerUsingDELETE",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityViewId",
+            "in": "path",
+            "description": "entityViewId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EntityView"
             }
           },
           "204": {
@@ -2057,6 +2109,59 @@
         ]
       }
     },
+    "/api/customer/public/entityView/{entityViewId}": {
+      "post": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "assignEntityViewToPublicCustomer",
+        "operationId": "assignEntityViewToPublicCustomerUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityViewId",
+            "in": "path",
+            "description": "entityViewId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EntityView"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
     "/api/customer/{customerId}": {
       "get": {
         "tags": [
@@ -2212,7 +2317,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/assets": {
+    "/api/customer/{customerId}/assets{?type,textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "asset-controller"
@@ -2412,7 +2517,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/dashboards": {
+    "/api/customer/{customerId}/dashboards{?startTime,endTime,ascOrder,offset,limit}": {
       "get": {
         "tags": [
           "dashboard-controller"
@@ -2560,7 +2665,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/devices": {
+    "/api/customer/{customerId}/devices{?type,textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "device-controller"
@@ -2622,6 +2727,151 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/TextPageData«Device»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/customer/{customerId}/entityView/{entityViewId}": {
+      "post": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "assignEntityViewToCustomer",
+        "operationId": "assignEntityViewToCustomerUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "description": "customerId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entityViewId",
+            "in": "path",
+            "description": "entityViewId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EntityView"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/customer/{customerId}/entityViews{?type,textSearch,idOffset,textOffset,limit}": {
+      "get": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "getCustomerEntityViews",
+        "operationId": "getCustomerEntityViewsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "description": "customerId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "type",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textSearch",
+            "in": "query",
+            "description": "textSearch",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "idOffset",
+            "in": "query",
+            "description": "idOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textOffset",
+            "in": "query",
+            "description": "textOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TextPageData«EntityView»"
             }
           },
           "401": {
@@ -2745,7 +2995,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/users": {
+    "/api/customer/{customerId}/users{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "user-controller"
@@ -2823,7 +3073,7 @@
         ]
       }
     },
-    "/api/customers": {
+    "/api/customers{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "customer-controller"
@@ -2976,6 +3226,48 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DashboardInfo"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/dashboard/maxDatapointsLimit": {
+      "get": {
+        "tags": [
+          "dashboard-controller"
+        ],
+        "summary": "getMaxDatapointsLimit",
+        "operationId": "getMaxDatapointsLimitUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
           },
           "401": {
@@ -3631,57 +3923,6 @@
       }
     },
     "/api/devices": {
-      "get": {
-        "tags": [
-          "device-controller"
-        ],
-        "summary": "getDevicesByIds",
-        "operationId": "getDevicesByIdsUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "deviceIds",
-            "in": "query",
-            "description": "deviceIds",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Device"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
       "post": {
         "tags": [
           "device-controller"
@@ -3739,13 +3980,13 @@
         ]
       }
     },
-    "/api/events/{entityType}/{entityId}": {
+    "/api/devices{?deviceIds}": {
       "get": {
         "tags": [
-          "event-controller"
+          "device-controller"
         ],
-        "summary": "getEvents",
-        "operationId": "getEventsUsingGET_1",
+        "summary": "getDevicesByIds",
+        "operationId": "getDevicesByIdsUsingGET",
         "consumes": [
           "application/json"
         ],
@@ -3754,63 +3995,10 @@
         ],
         "parameters": [
           {
-            "name": "entityType",
-            "in": "path",
-            "description": "entityType",
+            "name": "deviceIds",
+            "in": "query",
+            "description": "deviceIds",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "entityId",
-            "in": "path",
-            "description": "entityId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "tenantId",
-            "in": "query",
-            "description": "tenantId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "limit",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "startTime",
-            "in": "query",
-            "description": "startTime",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "endTime",
-            "in": "query",
-            "description": "endTime",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "ascOrder",
-            "in": "query",
-            "description": "ascOrder",
-            "required": false,
-            "type": "boolean",
-            "default": false
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "offset",
-            "required": false,
             "type": "string"
           }
         ],
@@ -3818,7 +4006,10 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/TimePageData«Event»"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Device"
+              }
             }
           },
           "401": {
@@ -3842,7 +4033,259 @@
         ]
       }
     },
-    "/api/events/{entityType}/{entityId}/{eventType}": {
+    "/api/entityView": {
+      "post": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "saveEntityView",
+        "operationId": "saveEntityViewUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "entityView",
+            "description": "entityView",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EntityView"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EntityView"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/entityView/types": {
+      "get": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "getEntityViewTypes",
+        "operationId": "getEntityViewTypesUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntitySubtype"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/entityView/{entityViewId}": {
+      "get": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "getEntityViewById",
+        "operationId": "getEntityViewByIdUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityViewId",
+            "in": "path",
+            "description": "entityViewId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EntityView"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "deleteEntityView",
+        "operationId": "deleteEntityViewUsingDELETE",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityViewId",
+            "in": "path",
+            "description": "entityViewId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/entityViews": {
+      "post": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "findByQuery",
+        "operationId": "findByQueryUsingPOST_3",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "query",
+            "description": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EntityViewSearchQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityView"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/events/{entityType}/{entityId}/{eventType}{?tenantId,limit,startTime,endTime,ascOrder,offset}": {
       "get": {
         "tags": [
           "event-controller"
@@ -3952,13 +4395,13 @@
         ]
       }
     },
-    "/api/noauth/activate": {
+    "/api/events/{entityType}/{entityId}{?tenantId,limit,startTime,endTime,ascOrder,offset}": {
       "get": {
         "tags": [
-          "auth-controller"
+          "event-controller"
         ],
-        "summary": "checkActivateToken",
-        "operationId": "checkActivateTokenUsingGET",
+        "summary": "getEvents",
+        "operationId": "getEventsUsingGET_1",
         "consumes": [
           "application/json"
         ],
@@ -3967,10 +4410,63 @@
         ],
         "parameters": [
           {
-            "name": "activateToken",
-            "in": "query",
-            "description": "activateToken",
+            "name": "entityType",
+            "in": "path",
+            "description": "entityType",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "entityId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tenantId",
+            "in": "query",
+            "description": "tenantId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "startTime",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "endTime",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "ascOrder",
+            "in": "query",
+            "description": "ascOrder",
+            "required": false,
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "offset",
+            "required": false,
             "type": "string"
           }
         ],
@@ -3978,7 +4474,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/TimePageData«Event»"
             }
           },
           "401": {
@@ -3990,8 +4486,19 @@
           "404": {
             "description": "Not Found"
           }
-        }
-      },
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/noauth/activate": {
       "post": {
         "tags": [
           "auth-controller"
@@ -4037,13 +4544,13 @@
         }
       }
     },
-    "/api/noauth/resetPassword": {
+    "/api/noauth/activate{?activateToken}": {
       "get": {
         "tags": [
           "auth-controller"
         ],
-        "summary": "checkResetToken",
-        "operationId": "checkResetTokenUsingGET",
+        "summary": "checkActivateToken",
+        "operationId": "checkActivateTokenUsingGET",
         "consumes": [
           "application/json"
         ],
@@ -4052,9 +4559,9 @@
         ],
         "parameters": [
           {
-            "name": "resetToken",
+            "name": "activateToken",
             "in": "query",
-            "description": "resetToken",
+            "description": "activateToken",
             "required": true,
             "type": "string"
           }
@@ -4076,7 +4583,9 @@
             "description": "Not Found"
           }
         }
-      },
+      }
+    },
+    "/api/noauth/resetPassword": {
       "post": {
         "tags": [
           "auth-controller"
@@ -4152,6 +4661,47 @@
           },
           "201": {
             "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/noauth/resetPassword{?resetToken}": {
+      "get": {
+        "tags": [
+          "auth-controller"
+        ],
+        "summary": "checkResetToken",
+        "operationId": "checkResetTokenUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "resetToken",
+            "in": "query",
+            "description": "resetToken",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
           },
           "401": {
             "description": "Unauthorized"
@@ -4356,7 +4906,9 @@
             ]
           }
         ]
-      },
+      }
+    },
+    "/api/plugins/telemetry/{deviceId}/{scope}{?keys}": {
       "delete": {
         "tags": [
           "telemetry-controller"
@@ -4674,6 +5226,102 @@
         ]
       }
     },
+    "/api/plugins/telemetry/{entityType}/{entityId}/timeseries/delete{?keys,deleteAllDataForKeys,startTs,endTs,rewriteLatestIfDeleted}": {
+      "delete": {
+        "tags": [
+          "telemetry-controller"
+        ],
+        "summary": "deleteEntityTimeseries",
+        "operationId": "deleteEntityTimeseriesUsingDELETE",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "description": "entityType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "entityId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "keys",
+            "in": "query",
+            "description": "keys",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "deleteAllDataForKeys",
+            "in": "query",
+            "description": "deleteAllDataForKeys",
+            "required": false,
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "name": "startTs",
+            "in": "query",
+            "description": "startTs",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "endTs",
+            "in": "query",
+            "description": "endTs",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "rewriteLatestIfDeleted",
+            "in": "query",
+            "description": "rewriteLatestIfDeleted",
+            "required": false,
+            "type": "boolean",
+            "default": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
     "/api/plugins/telemetry/{entityType}/{entityId}/timeseries/{scope}": {
       "post": {
         "tags": [
@@ -4834,71 +5482,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes": {
-      "get": {
-        "tags": [
-          "telemetry-controller"
-        ],
-        "summary": "getAttributes",
-        "operationId": "getAttributesUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "entityType",
-            "in": "path",
-            "description": "entityType",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "entityId",
-            "in": "path",
-            "description": "entityId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "keys",
-            "in": "query",
-            "description": "keys",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes/{scope}": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes/{scope}{?keys}": {
       "get": {
         "tags": [
           "telemetry-controller"
@@ -4969,7 +5553,175 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes{?keys}": {
+      "get": {
+        "tags": [
+          "telemetry-controller"
+        ],
+        "summary": "getAttributes",
+        "operationId": "getAttributesUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "description": "entityType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "entityId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "keys",
+            "in": "query",
+            "description": "keys",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?interval,limit,agg,keys,startTs,endTs}": {
+      "get": {
+        "tags": [
+          "telemetry-controller"
+        ],
+        "summary": "getTimeseries",
+        "operationId": "getTimeseriesUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "description": "entityType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "entityId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "interval",
+            "required": false,
+            "type": "integer",
+            "default": 0,
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit",
+            "required": false,
+            "type": "integer",
+            "default": 100,
+            "format": "int32"
+          },
+          {
+            "name": "agg",
+            "in": "query",
+            "description": "agg",
+            "required": false,
+            "type": "string",
+            "default": "NONE"
+          },
+          {
+            "name": "keys",
+            "in": "query",
+            "description": "keys",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "startTs",
+            "in": "query",
+            "description": "startTs",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endTs",
+            "in": "query",
+            "description": "endTs",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys}": {
       "get": {
         "tags": [
           "telemetry-controller"
@@ -5107,7 +5859,9 @@
             ]
           }
         ]
-      },
+      }
+    },
+    "/api/plugins/telemetry/{entityType}/{entityId}/{scope}{?keys}": {
       "delete": {
         "tags": [
           "telemetry-controller"
@@ -5179,6 +5933,656 @@
       }
     },
     "/api/relation": {
+      "post": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "saveRelation",
+        "operationId": "saveRelationUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "relation",
+            "description": "relation",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EntityRelation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations": {
+      "post": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findByQuery",
+        "operationId": "findByQueryUsingPOST_2",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "query",
+            "description": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EntityRelationsQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelation"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations/info": {
+      "post": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findInfoByQuery",
+        "operationId": "findInfoByQueryUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "query",
+            "description": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EntityRelationsQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelationInfo"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations/info{?relationTypeGroup,fromId,fromType}": {
+      "get": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findInfoByFrom",
+        "operationId": "findInfoByFromUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "relationTypeGroup",
+            "in": "query",
+            "description": "relationTypeGroup",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fromId",
+            "in": "query",
+            "description": "fromId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fromType",
+            "in": "query",
+            "description": "fromType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelationInfo"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations/info{?relationTypeGroup,toId,toType}": {
+      "get": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findInfoByTo",
+        "operationId": "findInfoByToUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "relationTypeGroup",
+            "in": "query",
+            "description": "relationTypeGroup",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "toId",
+            "in": "query",
+            "description": "toId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "toType",
+            "in": "query",
+            "description": "toType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelationInfo"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations{?entityId,entityType,id,type}": {
+      "delete": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "deleteRelations",
+        "operationId": "deleteRelationsUsingDELETE",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "query",
+            "description": "entityId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entityType",
+            "in": "query",
+            "description": "entityType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations{?relationTypeGroup,fromId,fromType,relationType}": {
+      "get": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findByFrom",
+        "operationId": "findByFromUsingGET_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "relationTypeGroup",
+            "in": "query",
+            "description": "relationTypeGroup",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fromId",
+            "in": "query",
+            "description": "fromId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fromType",
+            "in": "query",
+            "description": "fromType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "relationType",
+            "in": "query",
+            "description": "relationType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelation"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations{?relationTypeGroup,fromId,fromType}": {
+      "get": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findByFrom",
+        "operationId": "findByFromUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "relationTypeGroup",
+            "in": "query",
+            "description": "relationTypeGroup",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fromId",
+            "in": "query",
+            "description": "fromId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fromType",
+            "in": "query",
+            "description": "fromType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelation"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations{?relationTypeGroup,toId,toType,relationType}": {
+      "get": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findByTo",
+        "operationId": "findByToUsingGET_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "relationTypeGroup",
+            "in": "query",
+            "description": "relationTypeGroup",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "toId",
+            "in": "query",
+            "description": "toId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "toType",
+            "in": "query",
+            "description": "toType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "relationType",
+            "in": "query",
+            "description": "relationType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelation"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relations{?relationTypeGroup,toId,toType}": {
+      "get": {
+        "tags": [
+          "entity-relation-controller"
+        ],
+        "summary": "findByTo",
+        "operationId": "findByToUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "relationTypeGroup",
+            "in": "query",
+            "description": "relationTypeGroup",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "toId",
+            "in": "query",
+            "description": "toId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "toType",
+            "in": "query",
+            "description": "toType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EntityRelation"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/relation{?relationTypeGroup,fromId,fromType,relationType,toId,toType}": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -5241,56 +6645,6 @@
             "schema": {
               "$ref": "#/definitions/EntityRelation"
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "entity-relation-controller"
-        ],
-        "summary": "saveRelation",
-        "operationId": "saveRelationUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "relation",
-            "description": "relation",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/EntityRelation"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "201": {
-            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -5380,316 +6734,6 @@
           },
           "403": {
             "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/relations": {
-      "get": {
-        "tags": [
-          "entity-relation-controller"
-        ],
-        "summary": "findByFrom",
-        "operationId": "findByFromUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "relationTypeGroup",
-            "in": "query",
-            "description": "relationTypeGroup",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "fromId",
-            "in": "query",
-            "description": "fromId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "fromType",
-            "in": "query",
-            "description": "fromType",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/EntityRelation"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "entity-relation-controller"
-        ],
-        "summary": "findByQuery",
-        "operationId": "findByQueryUsingPOST_2",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "query",
-            "description": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/EntityRelationsQuery"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/EntityRelation"
-              }
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "entity-relation-controller"
-        ],
-        "summary": "deleteRelations",
-        "operationId": "deleteRelationsUsingDELETE",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "entityId",
-            "in": "query",
-            "description": "entityId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "entityType",
-            "in": "query",
-            "description": "entityType",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "204": {
-            "description": "No Content"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/relations/info": {
-      "get": {
-        "tags": [
-          "entity-relation-controller"
-        ],
-        "summary": "findInfoByTo",
-        "operationId": "findInfoByToUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "relationTypeGroup",
-            "in": "query",
-            "description": "relationTypeGroup",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "toId",
-            "in": "query",
-            "description": "toId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "toType",
-            "in": "query",
-            "description": "toType",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/EntityRelationInfo"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "entity-relation-controller"
-        ],
-        "summary": "findInfoByQuery",
-        "operationId": "findInfoByQueryUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "query",
-            "description": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/EntityRelationsQuery"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/EntityRelationInfo"
-              }
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
           }
         },
         "security": [
@@ -6066,7 +7110,7 @@
         ]
       }
     },
-    "/api/ruleChains": {
+    "/api/ruleChains{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "rule-chain-controller"
@@ -6242,7 +7286,7 @@
         ]
       }
     },
-    "/api/tenant/assets": {
+    "/api/tenant/assets{?assetName}": {
       "get": {
         "tags": [
           "asset-controller"
@@ -6292,7 +7336,85 @@
         ]
       }
     },
-    "/api/tenant/customers": {
+    "/api/tenant/assets{?type,textSearch,idOffset,textOffset,limit}": {
+      "get": {
+        "tags": [
+          "asset-controller"
+        ],
+        "summary": "getTenantAssets",
+        "operationId": "getTenantAssetsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "type",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textSearch",
+            "in": "query",
+            "description": "textSearch",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "idOffset",
+            "in": "query",
+            "description": "idOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textOffset",
+            "in": "query",
+            "description": "textOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TextPageData«Asset»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/tenant/customers{?customerTitle}": {
       "get": {
         "tags": [
           "customer-controller"
@@ -6342,7 +7464,7 @@
         ]
       }
     },
-    "/api/tenant/dashboards": {
+    "/api/tenant/dashboards{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "dashboard-controller"
@@ -6413,7 +7535,7 @@
         ]
       }
     },
-    "/api/tenant/devices": {
+    "/api/tenant/devices{?deviceName}": {
       "get": {
         "tags": [
           "device-controller"
@@ -6440,6 +7562,212 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/Device"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/tenant/devices{?type,textSearch,idOffset,textOffset,limit}": {
+      "get": {
+        "tags": [
+          "device-controller"
+        ],
+        "summary": "getTenantDevices",
+        "operationId": "getTenantDevicesUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "type",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textSearch",
+            "in": "query",
+            "description": "textSearch",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "idOffset",
+            "in": "query",
+            "description": "idOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textOffset",
+            "in": "query",
+            "description": "textOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TextPageData«Device»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/tenant/entityViews{?entityViewName}": {
+      "get": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "getTenantEntityView",
+        "operationId": "getTenantEntityViewUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "entityViewName",
+            "in": "query",
+            "description": "entityViewName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EntityView"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/tenant/entityViews{?type,textSearch,idOffset,textOffset,limit}": {
+      "get": {
+        "tags": [
+          "entity-view-controller"
+        ],
+        "summary": "getTenantEntityViews",
+        "operationId": "getTenantEntityViewsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "type",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textSearch",
+            "in": "query",
+            "description": "textSearch",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "idOffset",
+            "in": "query",
+            "description": "idOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "textOffset",
+            "in": "query",
+            "description": "textOffset",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TextPageData«EntityView»"
             }
           },
           "401": {
@@ -6558,7 +7886,7 @@
         ]
       }
     },
-    "/api/tenant/{tenantId}/dashboards": {
+    "/api/tenant/{tenantId}/dashboards{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "dashboard-controller"
@@ -6636,7 +7964,7 @@
         ]
       }
     },
-    "/api/tenant/{tenantId}/users": {
+    "/api/tenant/{tenantId}/users{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "user-controller"
@@ -6714,7 +8042,7 @@
         ]
       }
     },
-    "/api/tenants": {
+    "/api/tenants{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "tenant-controller"
@@ -6785,70 +8113,7 @@
         ]
       }
     },
-    "/api/user": {
-      "post": {
-        "tags": [
-          "user-controller"
-        ],
-        "summary": "saveUser",
-        "operationId": "saveUserUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "user",
-            "description": "user",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          {
-            "name": "sendActivationMail",
-            "in": "query",
-            "description": "sendActivationMail",
-            "required": false,
-            "type": "boolean",
-            "default": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/user/sendActivationMail": {
+    "/api/user/sendActivationMail{?email}": {
       "post": {
         "tags": [
           "user-controller"
@@ -7134,75 +8399,13 @@
         ]
       }
     },
-    "/api/v1/{deviceToken}/attributes": {
-      "get": {
-        "tags": [
-          "device-api-controller"
-        ],
-        "summary": "getDeviceAttributes",
-        "operationId": "getDeviceAttributesUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "deviceToken",
-            "in": "path",
-            "description": "deviceToken",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "clientKeys",
-            "in": "query",
-            "description": "clientKeys",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "sharedKeys",
-            "in": "query",
-            "description": "sharedKeys",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
+    "/api/user{?sendActivationMail}": {
       "post": {
         "tags": [
-          "device-api-controller"
+          "user-controller"
         ],
-        "summary": "postDeviceAttributes",
-        "operationId": "postDeviceAttributesUsingPOST",
+        "summary": "saveUser",
+        "operationId": "saveUserUsingPOST",
         "consumes": [
           "application/json"
         ],
@@ -7211,337 +8414,28 @@
         ],
         "parameters": [
           {
-            "name": "deviceToken",
-            "in": "path",
-            "description": "deviceToken",
-            "required": true,
-            "type": "string"
-          },
-          {
             "in": "body",
-            "name": "json",
-            "description": "json",
+            "name": "user",
+            "description": "user",
             "required": true,
             "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
+              "$ref": "#/definitions/User"
             }
           },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
           {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/v1/{deviceToken}/attributes/updates": {
-      "get": {
-        "tags": [
-          "device-api-controller"
-        ],
-        "summary": "subscribeToAttributes",
-        "operationId": "subscribeToAttributesUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "deviceToken",
-            "in": "path",
-            "description": "deviceToken",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "timeout",
+            "name": "sendActivationMail",
             "in": "query",
-            "description": "timeout",
+            "description": "sendActivationMail",
             "required": false,
-            "type": "integer",
-            "default": 0,
-            "format": "int64"
+            "type": "boolean",
+            "default": true
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/v1/{deviceToken}/rpc": {
-      "get": {
-        "tags": [
-          "device-api-controller"
-        ],
-        "summary": "subscribeToCommands",
-        "operationId": "subscribeToCommandsUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "deviceToken",
-            "in": "path",
-            "description": "deviceToken",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "timeout",
-            "in": "query",
-            "description": "timeout",
-            "required": false,
-            "type": "integer",
-            "default": 0,
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "device-api-controller"
-        ],
-        "summary": "postRpcRequest",
-        "operationId": "postRpcRequestUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "deviceToken",
-            "in": "path",
-            "description": "deviceToken",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "json",
-            "description": "json",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/v1/{deviceToken}/rpc/{requestId}": {
-      "post": {
-        "tags": [
-          "device-api-controller"
-        ],
-        "summary": "replyToCommand",
-        "operationId": "replyToCommandUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "deviceToken",
-            "in": "path",
-            "description": "deviceToken",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "requestId",
-            "in": "path",
-            "description": "requestId",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "in": "body",
-            "name": "json",
-            "description": "json",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      }
-    },
-    "/api/v1/{deviceToken}/telemetry": {
-      "post": {
-        "tags": [
-          "device-api-controller"
-        ],
-        "summary": "postTelemetry",
-        "operationId": "postTelemetryUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "deviceToken",
-            "in": "path",
-            "description": "deviceToken",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "json",
-            "description": "json",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DeferredResult«ResponseEntity»"
+              "$ref": "#/definitions/User"
             }
           },
           "201": {
@@ -7569,68 +8463,6 @@
       }
     },
     "/api/widgetType": {
-      "get": {
-        "tags": [
-          "widget-type-controller"
-        ],
-        "summary": "getWidgetType",
-        "operationId": "getWidgetTypeUsingGET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "name": "isSystem",
-            "in": "query",
-            "description": "isSystem",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "bundleAlias",
-            "in": "query",
-            "description": "bundleAlias",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "alias",
-            "in": "query",
-            "description": "alias",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/WidgetType"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "security": [
-          {
-            "X-Authorization": [
-              "SYS_ADMIN",
-              "TENANT_ADMIN",
-              "CUSTOMER_USER"
-            ]
-          }
-        ]
-      },
       "post": {
         "tags": [
           "widget-type-controller"
@@ -7780,7 +8612,7 @@
         ]
       }
     },
-    "/api/widgetTypes": {
+    "/api/widgetTypes{?isSystem,bundleAlias}": {
       "get": {
         "tags": [
           "widget-type-controller"
@@ -7817,6 +8649,70 @@
               "items": {
                 "$ref": "#/definitions/WidgetType"
               }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/widgetType{?isSystem,bundleAlias,alias}": {
+      "get": {
+        "tags": [
+          "widget-type-controller"
+        ],
+        "summary": "getWidgetType",
+        "operationId": "getWidgetTypeUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "isSystem",
+            "in": "query",
+            "description": "isSystem",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "bundleAlias",
+            "in": "query",
+            "description": "bundleAlias",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "alias",
+            "in": "query",
+            "description": "alias",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/WidgetType"
             }
           },
           "401": {
@@ -7991,6 +8887,50 @@
       }
     },
     "/api/widgetsBundles": {
+      "get": {
+        "tags": [
+          "widgets-bundle-controller"
+        ],
+        "summary": "getWidgetsBundles",
+        "operationId": "getWidgetsBundlesUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WidgetsBundle"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "X-Authorization": [
+              "SYS_ADMIN",
+              "TENANT_ADMIN",
+              "CUSTOMER_USER"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/widgetsBundles{?textSearch,idOffset,textOffset,limit}": {
       "get": {
         "tags": [
           "widgets-bundle-controller"
@@ -8244,6 +9184,7 @@
             "UPDATED",
             "ATTRIBUTES_UPDATED",
             "ATTRIBUTES_DELETED",
+            "TIMESERIES_DELETED",
             "RPC_CALL",
             "CREDENTIALS_UPDATED",
             "ASSIGNED_TO_CUSTOMER",
@@ -8337,9 +9278,37 @@
               "DEVICE",
               "ALARM",
               "RULE_CHAIN",
-              "RULE_NODE"
+              "RULE_NODE",
+              "ENTITY_VIEW",
+              "WIDGETS_BUNDLE",
+              "WIDGET_TYPE"
             ]
           }
+        }
+      }
+    },
+    "EntityViewId": {
+      "type": "object",
+      "properties": {
+        "entityType": {
+          "type": "string",
+          "enum": [
+            "TENANT",
+            "CUSTOMER",
+            "USER",
+            "DASHBOARD",
+            "ASSET",
+            "DEVICE",
+            "ALARM",
+            "RULE_CHAIN",
+            "RULE_NODE",
+            "ENTITY_VIEW",
+            "WIDGETS_BUNDLE",
+            "WIDGET_TYPE"
+          ]
+        },
+        "id": {
+          "type": "string"
         }
       }
     },
@@ -8512,6 +9481,70 @@
         }
       }
     },
+    "EntityView": {
+      "type": "object",
+      "properties": {
+        "additionalInfo": {
+          "type": "string"
+        },
+        "createdTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "customerId": {
+          "$ref": "#/definitions/CustomerId"
+        },
+        "endTimeMs": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "entityId": {
+          "$ref": "#/definitions/EntityId"
+        },
+        "id": {
+          "$ref": "#/definitions/EntityViewId"
+        },
+        "keys": {
+          "$ref": "#/definitions/TelemetryEntityView"
+        },
+        "name": {
+          "type": "string"
+        },
+        "startTimeMs": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "tenantId": {
+          "$ref": "#/definitions/TenantId"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "AttributesEntityView": {
+      "type": "object",
+      "properties": {
+        "cs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sh": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ss": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "Device": {
       "type": "object",
       "properties": {
@@ -8616,6 +9649,23 @@
         },
         "nextPageLink": {
           "$ref": "#/definitions/TextPageLink"
+        }
+      }
+    },
+    "EntityViewSearchQuery": {
+      "type": "object",
+      "properties": {
+        "entityViewTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parameters": {
+          "$ref": "#/definitions/RelationsSearchParameters"
+        },
+        "relationType": {
+          "type": "string"
         }
       }
     },
@@ -8772,6 +9822,20 @@
       "properties": {
         "id": {
           "type": "string"
+        }
+      }
+    },
+    "TelemetryEntityView": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "$ref": "#/definitions/AttributesEntityView"
+        },
+        "timeseries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -8943,7 +10007,10 @@
             "DEVICE",
             "ALARM",
             "RULE_CHAIN",
-            "RULE_NODE"
+            "RULE_NODE",
+            "ENTITY_VIEW",
+            "WIDGETS_BUNDLE",
+            "WIDGET_TYPE"
           ]
         },
         "tenantId": {
@@ -8968,6 +10035,23 @@
         },
         "nextPageLink": {
           "$ref": "#/definitions/TimePageLink"
+        }
+      }
+    },
+    "TextPageData«EntityView»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EntityView"
+          }
+        },
+        "hasNext": {
+          "type": "boolean"
+        },
+        "nextPageLink": {
+          "$ref": "#/definitions/TextPageLink"
         }
       }
     },
@@ -9227,7 +10311,10 @@
             "DEVICE",
             "ALARM",
             "RULE_CHAIN",
-            "RULE_NODE"
+            "RULE_NODE",
+            "ENTITY_VIEW",
+            "WIDGETS_BUNDLE",
+            "WIDGET_TYPE"
           ]
         },
         "direction": {
@@ -9270,24 +10357,6 @@
         }
       }
     },
-    "BillingInfoResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "quantityOfMeters": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "tenantId": {
-          "$ref": "#/definitions/TenantId"
-        }
-      }
-    },
     "TextPageData«Asset»": {
       "type": "object",
       "properties": {
@@ -9319,7 +10388,10 @@
             "DEVICE",
             "ALARM",
             "RULE_CHAIN",
-            "RULE_NODE"
+            "RULE_NODE",
+            "ENTITY_VIEW",
+            "WIDGETS_BUNDLE",
+            "WIDGET_TYPE"
           ]
         },
         "id": {

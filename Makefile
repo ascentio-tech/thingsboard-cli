@@ -15,7 +15,7 @@ SWAGGER_VERSION=3.0.8
 swagger-codegen-cli.jar:
 	wget http://central.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/${SWAGGER_VERSION}/swagger-codegen-cli-${SWAGGER_VERSION}.jar -O swagger-codegen-cli.jar
 
-THINGSBOARD_VERSION=2.1.1
+THINGSBOARD_VERSION=2.3.0
 generate-swagger-client: swagger-codegen-cli.jar
 	java -jar swagger-codegen-cli.jar generate -i swagger/thingsboard.json -l python -o thingsboard-client \
     --additional-properties projectName=thingsboard-client,packageName=thingsboard_client,packageVersion=${THINGSBOARD_VERSION},appDescription='Thingsboard REST client (auto-generated from Swagger spec)'
