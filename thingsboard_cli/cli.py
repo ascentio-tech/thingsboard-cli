@@ -9,10 +9,10 @@ from thingsboard_cli.rest_api import (
 )
 import thingsboard_client as tb
 
-class Repo(object):
+class CliContext(object):
     def __init__(self, tb_client):
       self.client = tb_client
-pass_repo = click.make_pass_decorator(Repo)
+pass_cli_context = click.make_pass_decorator(CliContext)
 
 
 @click.group()
@@ -35,11 +35,11 @@ def cli(ctx, username, url, password):
     print(response.json())
     exit(1)
 
-  ctx.obj = Repo(tb_client)
+  ctx.obj = CliContext(tb_client)
 
 
 @cli.command()
-@pass_repo
+@pass_cli_context
 def dashboard_list(repo):
   click.echo('- Listing all dashboards')
   def print_dashboards(dashboards):
