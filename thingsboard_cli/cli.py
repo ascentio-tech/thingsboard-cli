@@ -3,8 +3,11 @@ from os import path
 import click
 from click import command
 from thingsboard_cli.version import __version__
+from thingsboard_cli.rest_api import (
+  authenticate,
+  create_api_client
+)
 import thingsboard_client as tb
-import requests
 
 class Repo(object):
     def __init__(self, tb_client):
@@ -22,24 +25,6 @@ def cli(ctx, username, url, password):
   """
   Thinsboard CLI
   """
-  def authenticate(url, username, password):
-    path = "{}/api/auth/login".format(url)
-    response = requests.post(url=path, json={'username':username, 'password':password})
-    if response.status_code == requests.codes.ok:
-      return True, response.json()['token']
-    else:
-      return False, ''
-
-  def create_api_client(url, username, password, token):
-    configuration = tb.Configuration()
-    configuration.username = username
-    configuration.password = password
-    configuration.host = url
-    configuration.verify_ssl = False
-    configuration.api_key['X-Authorization'] = token
-    configuration.api_key_prefix['X-Authorization'] = 'Bearer'
-    return tb.ApiClient(configuration=configuration)
-
   is_authenticated, token = authenticate(url, username, password)
   if is_authenticated:
     click.echo(click.style("Authenticated!", fg='green'))
@@ -65,11 +50,6 @@ def dashboard_list(repo):
   print_dashboards(dashboards)
 
   def fetch_dashboard_metatada(id):
-    # conf = repo.client.configuration
-    # auth = conf.auth_settings
-    # path = '{}/api/dashboard/{}'.format(conf.host, id)
-    # api_key = conf.get_api_key_with_prefix('X-Authorization')
-    # response = requests.get(url=path,headers={'X-Authorization': api_key})
     response = controller.get_dashboard_by_id_using_get(id)
     return response
 
