@@ -38,10 +38,28 @@ def cli(ctx, username, url, password):
   ctx.obj = CliContext(tb_client)
 
 
+def create_output(output):
+  if not path.exists(output):
+    click.echo(click.style("Creating output directory: {}".format(output), fg='green'))
+    os.makedirs(output)
+
+  def save_to_file(content, name):
+    filename = '{}.json'.format(name)
+    with open(path.join(output, filename), 'w') as outfile:
+      click.echo(click.style("Saving: {}".format(name), fg='green'))
+      json.dump(content.to_dict(), outfile, indent=2, sort_keys=True, separators=(',', ':'))
+
+  return save_to_file
+
+
 @cli.command()
 @pass_cli_context
-def dashboard_list(repo):
-  click.echo('- Listing all dashboards')
+@click.option('--output', '-o', default='dashboards', type=click.Path(exists=False, writable=True, dir_okay=True))
+@click.option('--include', '-i', default='.*', type=str)
+@click.option('--exclude', '-e', default='', type=str)
+@click.option('--write', '-w', default=True, type=bool)
+def dashboard_list(repo, output, include, exclude, write):
+  click.echo('- Dashboards')
   def print_dashboards(dashboards):
     [click.echo("{} {}".format(d.id.id, d.name)) for d in dashboards]
 
@@ -53,25 +71,41 @@ def dashboard_list(repo):
     response = controller.get_dashboard_by_id_using_get(id)
     return response
 
-
-  output = 'dashboards'
-  def create_output(output):
-    if not path.exists(output):
-      click.echo(click.style("Creating output directory", fg='green'))
-      os.makedirs(output)
-
-  create_output(output)
+  save_to_file = create_output(output)
 
   def export_dashboard_metatada(id, name):
     metadata = fetch_dashboard_metatada(id)
-
-    filename = '{}.json'.format(name)
-    with open(path.join(output, filename), 'w') as outfile:
-      click.echo(click.style("Saving dashboard: {}".format(name), fg='green'))
-      json.dump(metadata.to_dict(), outfile, indent=2, sort_keys=True, separators=(',', ':'))
-
+    save_to_file(metadata, name)
 
   [export_dashboard_metatada(d.id.id, d.name) for d in dashboards]
+
+
+@cli.command()
+@pass_cli_context
+@click.option('--output', '-o', default='rule-chains', type=click.Path(exists=False, writable=True, dir_okay=True))
+@click.option('--include', '-i', default='.*', type=str)
+@click.option('--exclude', '-e', default='', type=str)
+@click.option('--write', '-w', default=True, type=bool)
+def rule_chains_list(repo, output, include, exclude, write):
+  click.echo('- Rule Chains')
+  def print_items(items):
+    [click.echo("{} {}".format(d.id.id, d.name)) for d in items]
+
+  controller = tb.RuleChainControllerApi(repo.client)
+  items = controller.get_rule_chains_using_get(limit=100).data
+  print_items(items)
+
+  def fetch_item(id):
+    response = controller.get_rule_chain_meta_data_using_get(id)
+    return response
+
+  save_to_file = create_output(output)
+
+  def export_item(id, name):
+    content = fetch_item(id)
+    save_to_file(content, name)
+
+  [export_item(d.id.id, d.name) for d in items]
 
 
 def main(**kwargs):
