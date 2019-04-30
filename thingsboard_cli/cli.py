@@ -1,5 +1,6 @@
+import json, os
+from os import path
 import click
-import signal
 from click import command
 from thingsboard_cli.version import __version__
 import thingsboard_client as tb
@@ -7,7 +8,7 @@ import requests
 
 class Repo(object):
     def __init__(self, tb_client):
-        self.client = tb_client
+      self.client = tb_client
 pass_repo = click.make_pass_decorator(Repo)
 
 
@@ -23,11 +24,12 @@ def cli(ctx, username, url, password):
   """
   def authenticate(url, username, password):
     path = "{}/api/auth/login".format(url)
-    response = requests.post(url=path,json={'username':username, 'password':password})
+    response = requests.post(url=path, json={'username':username, 'password':password})
     if response.status_code == requests.codes.ok:
       return True, response.json()['token']
     else:
       return False, ''
+
   def create_api_client(url, username, password, token):
     configuration = tb.Configuration()
     configuration.username = username
@@ -58,8 +60,38 @@ def dashboard_list(repo):
   def print_dashboards(dashboards):
     [click.echo("{} {}".format(d.id.id, d.name)) for d in dashboards]
 
-  dashboards = tb.DashboardControllerApi(repo.client).get_tenant_dashboards_using_get(limit=100)
+  controller = tb.DashboardControllerApi(repo.client)
+  dashboards = controller.get_tenant_dashboards_using_get(limit=100).data
   print_dashboards(dashboards)
+
+  def fetch_dashboard_metatada(id):
+    # conf = repo.client.configuration
+    # auth = conf.auth_settings
+    # path = '{}/api/dashboard/{}'.format(conf.host, id)
+    # api_key = conf.get_api_key_with_prefix('X-Authorization')
+    # response = requests.get(url=path,headers={'X-Authorization': api_key})
+    response = controller.get_dashboard_by_id_using_get(id)
+    return response
+
+
+  output = 'dashboards'
+  def create_output(output):
+    if not path.exists(output):
+      click.echo(click.style("Creating output directory", fg='green'))
+      os.makedirs(output)
+
+  create_output(output)
+
+  def export_dashboard_metatada(id, name):
+    metadata = fetch_dashboard_metatada(id)
+
+    filename = '{}.json'.format(name)
+    with open(path.join(output, filename), 'w') as outfile:
+      click.echo(click.style("Saving dashboard: {}".format(name), fg='green'))
+      json.dump(metadata.to_dict(), outfile, indent=2, sort_keys=True, separators=(',', ':'))
+
+
+  [export_dashboard_metatada(d.id.id, d.name) for d in dashboards]
 
 
 def main(**kwargs):
