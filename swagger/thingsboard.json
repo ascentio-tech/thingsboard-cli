@@ -348,7 +348,7 @@
         ]
       }
     },
-    "/api/alarm/highestSeverity/{entityType}/{entityId}{?searchStatus,status}": {
+    "/api/alarm/highestSeverity/{entityType}/{entityId}": {
       "get": {
         "tags": [
           "alarm-controller"
@@ -674,7 +674,7 @@
         ]
       }
     },
-    "/api/alarm/{entityType}/{entityId}{?searchStatus,status,limit,startTime,endTime,ascOrder,offset,fetchOriginator}": {
+    "/api/alarm/{entityType}/{entityId}": {
       "get": {
         "tags": [
           "alarm-controller"
@@ -1043,7 +1043,7 @@
         ]
       }
     },
-    "/api/assets{?assetIds}": {
+    "/api/assets": {
       "get": {
         "tags": [
           "asset-controller"
@@ -1096,7 +1096,7 @@
         ]
       }
     },
-    "/api/audit/logs/customer/{customerId}{?startTime,endTime,ascOrder,offset,limit}": {
+    "/api/audit/logs/customer/{customerId}": {
       "get": {
         "tags": [
           "audit-log-controller"
@@ -1184,7 +1184,7 @@
         ]
       }
     },
-    "/api/audit/logs/entity/{entityType}/{entityId}{?startTime,endTime,ascOrder,offset,limit}": {
+    "/api/audit/logs/entity/{entityType}/{entityId}": {
       "get": {
         "tags": [
           "audit-log-controller"
@@ -1279,7 +1279,7 @@
         ]
       }
     },
-    "/api/audit/logs/user/{userId}{?startTime,endTime,ascOrder,offset,limit}": {
+    "/api/audit/logs/user/{userId}": {
       "get": {
         "tags": [
           "audit-log-controller"
@@ -1367,7 +1367,7 @@
         ]
       }
     },
-    "/api/audit/logs{?startTime,endTime,ascOrder,offset,limit}": {
+    "/api/audit/logs": {
       "get": {
         "tags": [
           "audit-log-controller"
@@ -1644,7 +1644,7 @@
         ]
       }
     },
-    "/api/components{?componentTypes}": {
+    "/api/components": {
       "get": {
         "tags": [
           "component-descriptor-controller"
@@ -2317,7 +2317,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/assets{?type,textSearch,idOffset,textOffset,limit}": {
+    "/api/customer/{customerId}/assets": {
       "get": {
         "tags": [
           "asset-controller"
@@ -2517,7 +2517,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/dashboards{?startTime,endTime,ascOrder,offset,limit}": {
+    "/api/customer/{customerId}/dashboards": {
       "get": {
         "tags": [
           "dashboard-controller"
@@ -2665,7 +2665,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/devices{?type,textSearch,idOffset,textOffset,limit}": {
+    "/api/customer/{customerId}/devices": {
       "get": {
         "tags": [
           "device-controller"
@@ -2810,7 +2810,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/entityViews{?type,textSearch,idOffset,textOffset,limit}": {
+    "/api/customer/{customerId}/entityViews": {
       "get": {
         "tags": [
           "entity-view-controller"
@@ -2995,7 +2995,7 @@
         ]
       }
     },
-    "/api/customer/{customerId}/users{?textSearch,idOffset,textOffset,limit}": {
+    "/api/customer/{customerId}/users": {
       "get": {
         "tags": [
           "user-controller"
@@ -3073,7 +3073,7 @@
         ]
       }
     },
-    "/api/customers{?textSearch,idOffset,textOffset,limit}": {
+    "/api/customers": {
       "get": {
         "tags": [
           "customer-controller"
@@ -3980,7 +3980,7 @@
         ]
       }
     },
-    "/api/devices{?deviceIds}": {
+    "/api/devices": {
       "get": {
         "tags": [
           "device-controller"
@@ -4285,7 +4285,7 @@
         ]
       }
     },
-    "/api/events/{entityType}/{entityId}/{eventType}{?tenantId,limit,startTime,endTime,ascOrder,offset}": {
+    "/api/events/{entityType}/{entityId}/{eventType}": {
       "get": {
         "tags": [
           "event-controller"
@@ -4395,7 +4395,7 @@
         ]
       }
     },
-    "/api/events/{entityType}/{entityId}{?tenantId,limit,startTime,endTime,ascOrder,offset}": {
+    "/api/events/{entityType}/{entityId}": {
       "get": {
         "tags": [
           "event-controller"
@@ -4544,7 +4544,7 @@
         }
       }
     },
-    "/api/noauth/activate{?activateToken}": {
+    "/api/noauth/activate": {
       "get": {
         "tags": [
           "auth-controller"
@@ -4674,7 +4674,7 @@
         }
       }
     },
-    "/api/noauth/resetPassword{?resetToken}": {
+    "/api/noauth/resetPassword": {
       "get": {
         "tags": [
           "auth-controller"
@@ -4908,7 +4908,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{deviceId}/{scope}{?keys}": {
+    "/api/plugins/telemetry/{deviceId}/{scope}": {
       "delete": {
         "tags": [
           "telemetry-controller"
@@ -5226,7 +5226,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/timeseries/delete{?keys,deleteAllDataForKeys,startTs,endTs,rewriteLatestIfDeleted}": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/timeseries/delete": {
       "delete": {
         "tags": [
           "telemetry-controller"
@@ -5482,7 +5482,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes/{scope}{?keys}": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes/{scope}": {
       "get": {
         "tags": [
           "telemetry-controller"
@@ -5553,7 +5553,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes{?keys}": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/attributes": {
       "get": {
         "tags": [
           "telemetry-controller"
@@ -5617,7 +5617,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?interval,limit,agg,keys,startTs,endTs}": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries": {
       "get": {
         "tags": [
           "telemetry-controller"
@@ -5721,7 +5721,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys}": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries": {
       "get": {
         "tags": [
           "telemetry-controller"
@@ -5861,7 +5861,7 @@
         ]
       }
     },
-    "/api/plugins/telemetry/{entityType}/{entityId}/{scope}{?keys}": {
+    "/api/plugins/telemetry/{entityType}/{entityId}/{scope}": {
       "delete": {
         "tags": [
           "telemetry-controller"
@@ -6100,7 +6100,7 @@
         ]
       }
     },
-    "/api/relations/info{?relationTypeGroup,fromId,fromType}": {
+    "/api/relations/info": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -6167,7 +6167,7 @@
         ]
       }
     },
-    "/api/relations/info{?relationTypeGroup,toId,toType}": {
+    "/api/relations/info": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -6234,7 +6234,7 @@
         ]
       }
     },
-    "/api/relations{?entityId,entityType,id,type}": {
+    "/api/relations": {
       "delete": {
         "tags": [
           "entity-relation-controller"
@@ -6300,7 +6300,7 @@
         ]
       }
     },
-    "/api/relations{?relationTypeGroup,fromId,fromType,relationType}": {
+    "/api/relations": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -6374,7 +6374,7 @@
         ]
       }
     },
-    "/api/relations{?relationTypeGroup,fromId,fromType}": {
+    "/api/relations": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -6441,7 +6441,7 @@
         ]
       }
     },
-    "/api/relations{?relationTypeGroup,toId,toType,relationType}": {
+    "/api/relations": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -6515,7 +6515,7 @@
         ]
       }
     },
-    "/api/relations{?relationTypeGroup,toId,toType}": {
+    "/api/relations": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -6582,7 +6582,7 @@
         ]
       }
     },
-    "/api/relation{?relationTypeGroup,fromId,fromType,relationType,toId,toType}": {
+    "/api/relation": {
       "get": {
         "tags": [
           "entity-relation-controller"
@@ -7110,7 +7110,7 @@
         ]
       }
     },
-    "/api/ruleChains{?textSearch,idOffset,textOffset,limit}": {
+    "/api/ruleChains": {
       "get": {
         "tags": [
           "rule-chain-controller"
@@ -7286,7 +7286,7 @@
         ]
       }
     },
-    "/api/tenant/assets{?assetName}": {
+    "/api/tenant/assets": {
       "get": {
         "tags": [
           "asset-controller"
@@ -7336,7 +7336,7 @@
         ]
       }
     },
-    "/api/tenant/assets{?type,textSearch,idOffset,textOffset,limit}": {
+    "/api/tenant/assets": {
       "get": {
         "tags": [
           "asset-controller"
@@ -7414,7 +7414,7 @@
         ]
       }
     },
-    "/api/tenant/customers{?customerTitle}": {
+    "/api/tenant/customers": {
       "get": {
         "tags": [
           "customer-controller"
@@ -7464,7 +7464,7 @@
         ]
       }
     },
-    "/api/tenant/dashboards{?textSearch,idOffset,textOffset,limit}": {
+    "/api/tenant/dashboards": {
       "get": {
         "tags": [
           "dashboard-controller"
@@ -7535,7 +7535,7 @@
         ]
       }
     },
-    "/api/tenant/devices{?deviceName}": {
+    "/api/tenant/devices": {
       "get": {
         "tags": [
           "device-controller"
@@ -7585,7 +7585,7 @@
         ]
       }
     },
-    "/api/tenant/devices{?type,textSearch,idOffset,textOffset,limit}": {
+    "/api/tenant/devices": {
       "get": {
         "tags": [
           "device-controller"
@@ -7663,7 +7663,7 @@
         ]
       }
     },
-    "/api/tenant/entityViews{?entityViewName}": {
+    "/api/tenant/entityViews": {
       "get": {
         "tags": [
           "entity-view-controller"
@@ -7713,7 +7713,7 @@
         ]
       }
     },
-    "/api/tenant/entityViews{?type,textSearch,idOffset,textOffset,limit}": {
+    "/api/tenant/entityViews": {
       "get": {
         "tags": [
           "entity-view-controller"
@@ -7886,7 +7886,7 @@
         ]
       }
     },
-    "/api/tenant/{tenantId}/dashboards{?textSearch,idOffset,textOffset,limit}": {
+    "/api/tenant/{tenantId}/dashboards": {
       "get": {
         "tags": [
           "dashboard-controller"
@@ -7964,7 +7964,7 @@
         ]
       }
     },
-    "/api/tenant/{tenantId}/users{?textSearch,idOffset,textOffset,limit}": {
+    "/api/tenant/{tenantId}/users": {
       "get": {
         "tags": [
           "user-controller"
@@ -8042,7 +8042,7 @@
         ]
       }
     },
-    "/api/tenants{?textSearch,idOffset,textOffset,limit}": {
+    "/api/tenants": {
       "get": {
         "tags": [
           "tenant-controller"
@@ -8113,7 +8113,7 @@
         ]
       }
     },
-    "/api/user/sendActivationMail{?email}": {
+    "/api/user/sendActivationMail": {
       "post": {
         "tags": [
           "user-controller"
@@ -8399,7 +8399,7 @@
         ]
       }
     },
-    "/api/user{?sendActivationMail}": {
+    "/api/user": {
       "post": {
         "tags": [
           "user-controller"
@@ -8612,7 +8612,7 @@
         ]
       }
     },
-    "/api/widgetTypes{?isSystem,bundleAlias}": {
+    "/api/widgetTypes": {
       "get": {
         "tags": [
           "widget-type-controller"
@@ -8672,7 +8672,7 @@
         ]
       }
     },
-    "/api/widgetType{?isSystem,bundleAlias,alias}": {
+    "/api/widgetType": {
       "get": {
         "tags": [
           "widget-type-controller"
@@ -8930,7 +8930,7 @@
         ]
       }
     },
-    "/api/widgetsBundles{?textSearch,idOffset,textOffset,limit}": {
+    "/api/widgetsBundles": {
       "get": {
         "tags": [
           "widgets-bundle-controller"
@@ -9463,9 +9463,6 @@
     },
     "ShortCustomerInfo": {
       "type": "object",
-      "required": [
-        "isPublic"
-      ],
       "properties": {
         "customerId": {
           "$ref": "#/definitions/CustomerId"
