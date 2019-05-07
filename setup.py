@@ -38,7 +38,7 @@ setup(
                    'mock==1.3.0', 'testfixtures==4.9.1'],
     install_requires=['click',
                       'requests',
-                      'thingsboard-client>=2.3.0'
+                      'thingsboard-swagger-client>=2.3.0'
                       ],
     author_email="gmatheu@ascentio.com.ar",
     description=DESCRIPTION,
